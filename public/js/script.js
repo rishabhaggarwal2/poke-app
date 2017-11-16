@@ -64,9 +64,11 @@ var lesson10 = {
     this.container.appendChild(this.renderer.domElement);
     // Events
     THREEx.WindowResize(this.renderer, this.camera);
-    document.addEventListener("touchstart mousedown", this.onDocumentMouseDown, false);
+    document.addEventListener("touchstart", this.onDocumentMouseDown);
+    document.addEventListener("mousedown", this.onDocumentMouseDown, false);
     document.addEventListener("mousemove", this.onDocumentMouseMove, false);
-    document.addEventListener("touchend mouseup", this.onDocumentMouseUp, false);
+    document.addEventListener("mouseup", this.onDocumentMouseUp, false);
+    document.addEventListener("touchend", this.onDocumentMouseUp);
     // Prepare Orbit controls
     this.controls = new THREE.OrbitControls(this.camera);
     this.controls.target = new THREE.Vector3(0, 0, 0);
@@ -235,9 +237,11 @@ function initializeLesson() {
         }
         if(user.alive) {
           var curr = lesson10.objects.find(elem => elem.uid == user.id);
-          curr.scale.x = user.fatness/2;
-          curr.scale.y = user.fatness/2;
-          curr.scale.z = user.fatness/2;
+          if(curr) {
+            curr.scale.x = user.fatness/2;
+            curr.scale.y = user.fatness/2;
+            curr.scale.z = user.fatness/2;
+          }
         } else {
             var currIndex = lesson10.objects.findIndex(elem => elem.uid == user.id);
             lesson10.scene.remove(lesson10.objects[currIndex]);
