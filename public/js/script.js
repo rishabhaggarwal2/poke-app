@@ -267,7 +267,9 @@ function initializeLesson() {
     $(".size span").html(me.fatness);
   });
   socket.on("destroy", function(id) {
+    console.log("destroy", id);
     var currIndex = lesson10.objects.findIndex(elem => elem.uid == id);
+    console.log("destroy on index", currIndex);
     if(currIndex) {
       lesson10.scene.remove(lesson10.objects[currIndex]);
       lesson10.objects.splice(currIndex, 1);
