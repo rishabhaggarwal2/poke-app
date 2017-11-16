@@ -266,6 +266,13 @@ function initializeLesson() {
     $(".pokes span").html(me.pokes);
     $(".size span").html(me.fatness);
   });
+  socket.on("destroy", function(id) {
+    var currIndex = lesson10.objects.findIndex(elem => elem.uid == id);
+    if(currIndex) {
+      lesson10.scene.remove(lesson10.objects[currIndex]);
+      lesson10.objects.splice(currIndex, 1);
+    }
+  });
   socket.emit("connectlol", my_id);
    my_interval = window.setInterval(function() {
      socket.emit("existing", my_id);
