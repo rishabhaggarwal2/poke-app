@@ -270,7 +270,7 @@ function initializeLesson() {
     console.log("destroy", id);
     var currIndex = lesson10.objects.findIndex(elem => elem.uid == id);
     console.log("destroy on index", currIndex);
-    if(currIndex) {
+    if(currIndex != -1) {
       lesson10.scene.remove(lesson10.objects[currIndex]);
       lesson10.objects.splice(currIndex, 1);
     }

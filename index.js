@@ -29,7 +29,7 @@ setInterval(function() {
   }
   deleteIDs.forEach(id => {
     var deleteIndex = users.find(user => user.id == id);
-    if (deleteIndex) users.splice(deleteIndex, 1);
+    if (deleteIndex !== -1) users.splice(deleteIndex, 1);
     io.emit("destroy", id);
   });
   io.emit("poke", users);
