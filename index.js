@@ -23,6 +23,7 @@ setInterval(function() {
     } else if (users[i].alive) {
       users[i].alive = false;
     } else {
+      console.log("deleting", users[i].id);
       deleteIDs.push(users[i].id);
     }
   }
