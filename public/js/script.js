@@ -6,6 +6,7 @@ var me = {
   size: 5
 };
 var my_users = [];
+var my_interval;
 sbVertexShader = [
   "varying vec3 vWorldPosition;",
   "void main() {",
@@ -238,10 +239,14 @@ function initializeLesson() {
     lesson10.addObjects(users);
   });
   socket.on("poke", function(users) {
+    console.log(users);
     users.forEach(user => {
       if (user.id == my_id) {
         me.pokes = user.pokes;
         me.fatness = user.fatness;
+        if(!user.alive) {
+          clearInterval(my_interval);
+        }
       }
       if (user.alive) {
         var curr = lesson10.objects.find(elem => elem.uid == user.id);
@@ -252,12 +257,19 @@ function initializeLesson() {
         }
       } else {
         var currIndex = lesson10.objects.findIndex(elem => elem.uid == user.id);
-        lesson10.scene.remove(lesson10.objects[currIndex]);
-        lesson10.objects.splice(currIndex, 1);
+        if(currIndex) {
+          lesson10.scene.remove(lesson10.objects[currIndex]);
+          lesson10.objects.splice(currIndex, 1);
+        }
       }
     });
+    $(".pokes span").html(me.pokes);
+    $(".size span").html(me.fatness);
   });
   socket.emit("connectlol", my_id);
+   my_interval = window.setInterval(function() {
+     socket.emit("existing", my_id);
+   }, 1000);
   animate();
 }
 if (window.addEventListener)
