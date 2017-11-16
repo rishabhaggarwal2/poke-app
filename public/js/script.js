@@ -5,8 +5,10 @@ var me = {
   pokes: 5,
   size: 5
 };
+var me_alive = true;
 var my_users = [];
 var my_interval;
+var startTime;
 sbVertexShader = [
   "varying vec3 vWorldPosition;",
   "void main() {",
@@ -27,6 +29,28 @@ sbFragmentShader = [
   "}"
 ].join("\n");
 
+function setTime(timeDiff) {
+  // get seconds (Original had 'round' which incorrectly counts 0:28, 0:29, 1:30 ... 1:59, 1:0)
+  timeDiff = Math.floor(timeDiff / 40);
+  var seconds = Math.round(timeDiff % 60);
+
+  // remove seconds from the date
+  timeDiff = Math.floor(timeDiff / 60);
+
+  // get minutes
+  var minutes = Math.round(timeDiff % 60);
+
+  // remove minutes from the date
+  timeDiff = Math.floor(timeDiff / 60);
+
+  // get hours
+  var hours = Math.round(timeDiff % 24);
+
+  // remove hours from the date
+  timeDiff = Math.floor(timeDiff / 24);
+
+  $(".size span").html(hours + " : " + minutes);
+}
 var lesson10 = {
   scene: null,
   camera: null,
@@ -141,7 +165,7 @@ var lesson10 = {
       // lesson10.selection.scale.y+=0.5;
       // lesson10.selection.scale.z+=0.5;
       console.log(lesson10.selection.uid);
-      if (lesson10.selection.uid != my_id) {
+      if (lesson10.selection.uid != my_id && me_alive) {
         console.log("poke");
         socket.emit("poke", { poker: my_id, poked: lesson10.selection.uid });
       }
@@ -174,7 +198,9 @@ var lesson10 = {
             flatShading: true,
             emissive: 0x0,
             specular: 0x0,
-            shininess: 100
+            shininess: 100,
+            transparency: false,
+            opacity: 1,
           });
         } else {
           material = new THREE.MeshPhongMaterial({
@@ -182,7 +208,9 @@ var lesson10 = {
             flatShading: true,
             emissive: 0x0,
             specular: 0x0,
-            shininess: 100
+            shininess: 100,
+            transparency: true,
+            opacity: 1,
           });
         }
         material.transparent = true;
@@ -214,6 +242,9 @@ function animate() {
 function update() {
   var delta = lesson10.clock.getDelta();
   lesson10.controls.update(delta);
+
+  var timeDiff = new Date() - startTime;
+  setTime(timeDiff);
   // lesson10.stats.update();
   lesson10.objects.forEach(object => {
     object.rotation.x += 0.01 / object.scale.x;
@@ -232,6 +263,7 @@ function render() {
 function initializeLesson() {
   socket = io();
   lesson10.init();
+  startTime = new Date();
   my_id = (new Date().toString() + new Date().getMilliseconds().toString()
   ).replace(/\s/g, "");
   socket.on("add user", function(users) {
@@ -244,8 +276,10 @@ function initializeLesson() {
       if (user.id == my_id) {
         me.pokes = user.pokes;
         me.fatness = user.fatness;
-        if(!user.alive) {
+        if (!user.alive) {
           clearInterval(my_interval);
+          $(".pokes").css("opacity",0);
+          me_alive = false;
         }
       }
       if (user.alive) {
@@ -254,25 +288,42 @@ function initializeLesson() {
           curr.scale.x = user.fatness / 2;
           curr.scale.y = user.fatness / 2;
           curr.scale.z = user.fatness / 2;
+          console.log(curr);
+          if (user.id == my_id) {
+            curr.material.opacity = 1;
+          } else {
+              curr.material.opacity = user.fatness / 10;
+          }
+          // curr.scale.y = user.fatness / 2;
+          // curr.scale.z = user.fatness / 2;
         }
       } else {
         var currIndex = lesson10.objects.findIndex(elem => elem.uid == user.id);
-        if(currIndex != -1) {
+        if (currIndex != -1) {
           lesson10.objects[currIndex].scale.x = 0;
           lesson10.objects[currIndex].scale.y = 0;
           lesson10.objects[currIndex].scale.z = 0;
+          lesson10.objects[currIndex].material.opacity = 0;
           lesson10.objects.splice(currIndex, 1);
         }
       }
     });
-    $(".pokes span").html(me.pokes);
+    $(".pokes .ghost span").html(" " + me.pokes + " ");
+    var opacity = 1;
+    if (me.pokes < 5) {
+      opacity = (me.pokes % 5) / 5;
+    } else if (me.pokes > 5) {
+      opacity = ((10 - me.pokes) % 5) / 5;
+    }
+    $(".pokes .ghost").css("opacity", opacity);
+    // $(".pokes .ghosted span").html(" " + 10 - me.pokes - 5 + " ");
     $(".size span").html(me.fatness);
   });
   socket.on("destroy", function(id) {
     console.log("destroy", id);
     var currIndex = lesson10.objects.findIndex(elem => elem.uid == id);
     console.log("destroy on index", currIndex);
-    if(currIndex != -1) {
+    if (currIndex != -1) {
       lesson10.objects[currIndex].scale.x = 0;
       lesson10.objects[currIndex].scale.y = 0;
       lesson10.objects[currIndex].scale.z = 0;
@@ -280,9 +331,9 @@ function initializeLesson() {
     }
   });
   socket.emit("connectlol", my_id);
-   my_interval = window.setInterval(function() {
-     socket.emit("existing", my_id);
-   }, 1000);
+  my_interval = window.setInterval(function() {
+    socket.emit("existing", my_id);
+  }, 1000);
   animate();
 }
 if (window.addEventListener)

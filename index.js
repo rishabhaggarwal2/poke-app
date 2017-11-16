@@ -79,10 +79,10 @@ io.on("connection", function(socket) {
     var toDelete = [];
     users.forEach((user, index) => {
       if (user.id == pokeDetails.poker) {
-        user.fatness--;
+        user.fatness++;
         user.pokes--;
       } else if (user.id == pokeDetails.poked) {
-        user.fatness++;
+        user.fatness--;
         user.pokes++;
       }
       if (user.fatness >= 10 || user.fatness <= -0) {

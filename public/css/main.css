@@ -1,3 +1,7 @@
+* {
+  transition: 0.5s ease all;
+}
+
 body,
 html {
   margin: 0;
@@ -24,10 +28,18 @@ html {
   position: absolute;
   top:0;
   z-index: 10;
-  /*display: flex;
-  justify-content: center;*/
+  display: flex;
+  justify-content: center;
   text-align: center;
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
+}
+
+.size span {
+  text-align: left;
+}
+
+.ghosted {
+  font-size: 14px;
 }
