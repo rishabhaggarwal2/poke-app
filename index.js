@@ -98,6 +98,7 @@ io.on("connection", function(socket) {
   });
 
   socket.on("existing", function(id) {
+    console.log("exisitng", id);
     var user = users.find(user => user.id == id);
     if (user) user.exists = 1;
   });
