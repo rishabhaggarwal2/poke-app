@@ -64,9 +64,9 @@ var lesson10 = {
     this.container.appendChild(this.renderer.domElement);
     // Events
     THREEx.WindowResize(this.renderer, this.camera);
-    document.addEventListener("mousedown", this.onDocumentMouseDown, false);
+    document.addEventListener("touchstart mousedown", this.onDocumentMouseDown, false);
     document.addEventListener("mousemove", this.onDocumentMouseMove, false);
-    document.addEventListener("mouseup", this.onDocumentMouseUp, false);
+    document.addEventListener("touchend mouseup", this.onDocumentMouseUp, false);
     // Prepare Orbit controls
     this.controls = new THREE.OrbitControls(this.camera);
     this.controls.target = new THREE.Vector3(0, 0, 0);
