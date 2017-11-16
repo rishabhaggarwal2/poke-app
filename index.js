@@ -28,10 +28,15 @@ setInterval(function() {
     }
   }
   deleteIDs.forEach(id => {
-    var deleteIndex = users.find(user => user.id == id);
-    if (deleteIndex !== -1) users.splice(deleteIndex, 1);
+    var deleteIndex = users.findIndex(user => user.id == id);
+    if (deleteIndex != -1) {
+      console.log("deleting ", id, " from index ", deleteIndex);
+      users.splice(deleteIndex, 1);
+    }
+    console.log("length is ", users.length, deleteIDs.length);
     io.emit("destroy", id);
   });
+  deleteIDs.splice(0, deleteIDs.length);
   io.emit("poke", users);
 }, 3500);
 

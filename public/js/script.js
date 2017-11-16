@@ -257,8 +257,10 @@ function initializeLesson() {
         }
       } else {
         var currIndex = lesson10.objects.findIndex(elem => elem.uid == user.id);
-        if(currIndex) {
-          lesson10.scene.remove(lesson10.objects[currIndex]);
+        if(currIndex != -1) {
+          lesson10.objects[currIndex].scale.x = 0;
+          lesson10.objects[currIndex].scale.y = 0;
+          lesson10.objects[currIndex].scale.z = 0;
           lesson10.objects.splice(currIndex, 1);
         }
       }
@@ -271,7 +273,9 @@ function initializeLesson() {
     var currIndex = lesson10.objects.findIndex(elem => elem.uid == id);
     console.log("destroy on index", currIndex);
     if(currIndex != -1) {
-      lesson10.scene.remove(lesson10.objects[currIndex]);
+      lesson10.objects[currIndex].scale.x = 0;
+      lesson10.objects[currIndex].scale.y = 0;
+      lesson10.objects[currIndex].scale.z = 0;
       lesson10.objects.splice(currIndex, 1);
     }
   });
