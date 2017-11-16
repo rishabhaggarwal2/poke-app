@@ -7,5 +7,5 @@
     "socket.io": "^2.0.4",
     "three": "^0.88.0"
   },
-  "start": "node index.js",
+  "start": "node index.js"
 }
