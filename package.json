@@ -1,0 +1,10 @@
+{
+  "name": "socket-poke-app",
+  "version": "0.0.1",
+  "description": "Poke App for DMA 161 Project 2",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^2.0.4",
+    "three": "^0.88.0"
+  }
+}
