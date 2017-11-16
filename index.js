@@ -21,7 +21,7 @@ setInterval(function() {
     if (users[i].exists) {
       users[i].exists = 0;
     } else if (users[i].alive) {
-      users[i].alive = 0;
+      users[i].alive = false;
     } else {
       deleteIDs.push(users[i].id);
     }
