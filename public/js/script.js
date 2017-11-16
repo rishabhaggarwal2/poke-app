@@ -1,9 +1,9 @@
 var socket;
 var my_id;
 var me = {
-  id: '',
+  id: "",
   pokes: 5,
-  size: 5,
+  size: 5
 };
 var my_users = [];
 sbVertexShader = [
@@ -112,8 +112,15 @@ var lesson10 = {
   },
   onDocumentMouseDown: function(event) {
     // Get mouse position
-    var mouseX = event.clientX / window.innerWidth * 2 - 1;
-    var mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    var mouseX, mouseY;
+    if (event.touches && event.touches.length === 1) {
+      event.preventDefault();
+      mouseX = event.touches[0].pageX / window.innerWidth * 2 - 1;
+      mouseY = -(event.touches[0].pageY / window.innerHeight) * 2 + 1;
+    } else {
+      mouseX = event.clientX / window.innerWidth * 2 - 1;
+      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
     // Get 3D vector from 3D mouse position using 'unproject' function
     var vector = new THREE.Vector3(mouseX, mouseY, 1);
     vector.unproject(lesson10.camera);
@@ -133,9 +140,9 @@ var lesson10 = {
       // lesson10.selection.scale.y+=0.5;
       // lesson10.selection.scale.z+=0.5;
       console.log(lesson10.selection.uid);
-      if(lesson10.selection.uid != my_id) {
-          console.log("poke");
-          socket.emit("poke", {poker: my_id, poked:lesson10.selection.uid});
+      if (lesson10.selection.uid != my_id) {
+        console.log("poke");
+        socket.emit("poke", { poker: my_id, poked: lesson10.selection.uid });
       }
       // Calculate the offset
       var intersects = lesson10.raycaster.intersectObject(lesson10.plane);
@@ -154,13 +161,13 @@ var lesson10 = {
     // Add 100 random objects (spheres)
     users.forEach(user => {
       //if user doesn't exist in my users
-      if(my_users.indexOf(user.id) === -1 && user.alive) {
+      if (my_users.indexOf(user.id) === -1 && user.alive) {
         //Add user to my users
         my_users.push(user.id);
         //Create new user
         var object, material, radius;
         var objGeometry = new THREE.SphereGeometry(1, 5, 5);
-        if(user.id == my_id) {
+        if (user.id == my_id) {
           material = new THREE.MeshPhongMaterial({
             color: 0xffffff,
             flatShading: true,
@@ -181,9 +188,9 @@ var lesson10 = {
         object = new THREE.Mesh(objGeometry.clone(), material);
         this.objects.push(object);
         radius = 2.5;
-        object.scale.x = user.fatness/2;
-        object.scale.y = user.fatness/2;
-        object.scale.z = user.fatness/2;
+        object.scale.x = user.fatness / 2;
+        object.scale.y = user.fatness / 2;
+        object.scale.z = user.fatness / 2;
         object.position.x = user.x;
         object.position.y = user.y;
         object.position.z = user.z;
@@ -224,29 +231,30 @@ function render() {
 function initializeLesson() {
   socket = io();
   lesson10.init();
-  my_id = (new Date().toString() + new Date().getMilliseconds().toString()).replace(/\s/g, '');
+  my_id = (new Date().toString() + new Date().getMilliseconds().toString()
+  ).replace(/\s/g, "");
   socket.on("add user", function(users) {
     console.log("shit");
     lesson10.addObjects(users);
   });
   socket.on("poke", function(users) {
     users.forEach(user => {
-        if(user.id == my_id) {
-          me.pokes = user.pokes;
-          me.fatness = user.fatness;
+      if (user.id == my_id) {
+        me.pokes = user.pokes;
+        me.fatness = user.fatness;
+      }
+      if (user.alive) {
+        var curr = lesson10.objects.find(elem => elem.uid == user.id);
+        if (curr) {
+          curr.scale.x = user.fatness / 2;
+          curr.scale.y = user.fatness / 2;
+          curr.scale.z = user.fatness / 2;
         }
-        if(user.alive) {
-          var curr = lesson10.objects.find(elem => elem.uid == user.id);
-          if(curr) {
-            curr.scale.x = user.fatness/2;
-            curr.scale.y = user.fatness/2;
-            curr.scale.z = user.fatness/2;
-          }
-        } else {
-            var currIndex = lesson10.objects.findIndex(elem => elem.uid == user.id);
-            lesson10.scene.remove(lesson10.objects[currIndex]);
-            lesson10.objects.splice(currIndex, 1);
-        }
+      } else {
+        var currIndex = lesson10.objects.findIndex(elem => elem.uid == user.id);
+        lesson10.scene.remove(lesson10.objects[currIndex]);
+        lesson10.objects.splice(currIndex, 1);
+      }
     });
   });
   socket.emit("connectlol", my_id);
