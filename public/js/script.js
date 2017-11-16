@@ -49,7 +49,7 @@ function setTime(timeDiff) {
   // remove hours from the date
   timeDiff = Math.floor(timeDiff / 24);
 
-  $(".size span").html(hours + " . " + minutes);
+  $(".size span").html(hours + "." + minutes + "m");
 }
 var lesson10 = {
   scene: null,
